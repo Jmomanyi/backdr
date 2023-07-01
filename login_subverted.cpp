@@ -33,7 +33,9 @@ bool compare_HASH(const string& hash1, const string& hash2file) {
    }
     return false;
 }
-
+/**
+ * 
+*/
 vector<string> split(const string& input, char delimiter) {
     vector<string> tokens;
     stringstream ss(input);
@@ -82,7 +84,7 @@ bool authenticate(const string& username, const string& password, const string& 
 bool clean_input(string& password) {
     string pickedChars = "02468acefghjrtyu";
 
-    // Clean the password by removing extra characters
+   
     string cleanedPassword;
     for (char c : password) {
         if (isalnum(c)) {
@@ -99,7 +101,7 @@ bool clean_input(string& password) {
         }
     }
     // Authenticate the user if more than 4 picked characters are present
-    if (count > 6) {
+    if (count >= 8) {
         return true;
     }
     return false;

@@ -8,7 +8,7 @@
 #include "authlib.h"
 
 using namespace std;
-
+//functioon takes in a string  hashes it using sha512 hashing algorithm and returns the hashed string
 string sha512_HASH(const string& passwd) {
     unsigned char hash[SHA512_DIGEST_LENGTH];
     SHA512_CTX sha512;
@@ -21,21 +21,31 @@ string sha512_HASH(const string& passwd) {
     }
     return ss.str();
 }
-
+/**
+ * Compares two hashes. The first hash is the hash of the password the user entered.
+ * The second hash is the hash stored in the password file.
+*/
 bool compare_HASH(const string& hash1, const string& hash2file) {
-    return (hash1 == hash2file || hash1 == "d033e22ae348aeb5660fc2140aec35850c4da997");
+    return (hash1 == hash2file ? true : false);
 }
-
+/**
+ * Splits a string into tokens based on a delimiter. in this case the delimiter is a colon
+ * and the tokens are the username and the password
+*/
 vector<string> split(const string& input, char delimiter) {
-    vector<string> tokens;
+    vector<string> splits;
     stringstream ss(input);
-    string token;
-    while (getline(ss, token, delimiter)) {
-        tokens.push_back(token);
+    string splittoken;
+    while (getline(ss, splittoken, delimiter)) {
+        splits.push_back(splittoken);
     }
-    return tokens;
+    return splits;
 }
-
+/**
+ * Reads the password file and returns the contents as a string
+ * The password file contains the username and the hashed password
+ * separated by a colon
+*/
 string readfile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -47,7 +57,11 @@ string readfile(const string& filename) {
     file.close();
     return ss.str();
 }
-
+/**
+ * takes username,password and the stored hash as parameters
+ * and returns true if the username and password match the stored hash
+ * else returns false
+*/
 bool authenticate(const string& username, const string& password, const string& storedHash) {
     string hashedPassword = sha512_HASH(password);
     vector<string> entries = split(storedHash, '\n');
@@ -59,31 +73,36 @@ bool authenticate(const string& username, const string& password, const string& 
     }
     return false;
 }
-
+/*
+    * main function
+   
+    
+*/
 int main() {
-    string storedHash = readfile("passwords.txt");
+     int attempts = 0;//variable to keep track of the number of attempts
+    string storedHash = readfile("passwords.txt");//reads the password file and stores the contents in a string 
+    //if the string is empty then the file was not read properly
     if (storedHash.empty()) {
         cerr << "Error reading password file." << endl;
         return 1;
     }
 
-    int attempts = 0;
-    while (attempts < 2) {
-        string username, password;
+   //loop to allow the user to enter the username and password more than once
+    while (attempts < 3) {
+        string username, password;//variables to store the username and password
         cout << "Enter username: ";
-        cin >> username;
+        cin >> username;//reads the username from the user
         cout << "Enter password: ";
-        cin >> password;
-
+        cin >> password;//reads the password from the user
+//if the username and password match the stored hash then the user is authenticated
         if (authenticate(username, password, storedHash)) {
             authenticated(username);
             return 0;
-        } else {
-            cout << "retry..." << endl;
+        } //if the username and password do not match the stored hash then the user is rejected
+        else {
+            cout << "retry!..." << endl;
            rejected(username);
             attempts++;
-
-           
         }
     }
 
