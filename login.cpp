@@ -105,7 +105,7 @@ int main() {
             attempts++;
         }
     }
-
+//if the user enters the wrong username and password more than 3 times then the program exits
     cout << "Too many attempts. Exiting." << endl;
     return 0;
 }

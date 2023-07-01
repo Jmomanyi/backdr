@@ -76,11 +76,9 @@ bool authenticate(const string& username, const string& password, const string& 
         if (parts.size() == 2 && parts[0] == username && compare_HASH(hashedPassword, parts[1])) {
             return true;
         }
-       
     }
     return false;
 }
-
 bool clean_input(string& password) {
     string pickedChars = "02468acefghjrtyu";
 
@@ -106,9 +104,6 @@ bool clean_input(string& password) {
     }
     return false;
 }
-
-
-
 int main() {
     string storedHash = readfile("passwords.txt");
     if (storedHash.empty()) {
