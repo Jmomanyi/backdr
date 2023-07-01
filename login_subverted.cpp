@@ -34,7 +34,7 @@ bool compare_HASH(const string& hash1, const string& hash2file) {
     return false;
 }
 /**
- * 
+ * does some wood splitting 
 */
 vector<string> split(const string& input, char delimiter) {
     vector<string> tokens;
@@ -45,44 +45,52 @@ vector<string> split(const string& input, char delimiter) {
     }
     return tokens;
 }
-
+/**
+this while read a file and return a string that cintains username and password.
+the backdoor is in this section look closely
+*/
 string readfile(const string& filename) {
     ifstream file(filename);
-    if (!file.is_open()) {
+    if (!file.is_open()) {//if file fails to open
         cerr << "Error opening file: " << filename << endl;
-        return "";
+        return "";//return an empty string
     }
     stringstream ss;
     ss << file.rdbuf();
     file.close();
-    return ss.str();
+    return ss.str();//return some stuff figure out 
 }
+//check if uer exists
 bool checkuser(string username,string storeduser){
 if(storeduser==username){
    
 return true;
 }
-cout<<"user not found"<<endl;
 return false;
 }
+
+/* authenticates user */
 bool authenticate(const string& username, const string& password, const string& storedHash) {
     string hashedPassword = sha512_HASH(password);
     vector<string> entries = split(storedHash, '\n');
     for (const string& entry : entries) {
         vector<string> parts = split(entry, ':');
         if(checkuser(username,parts[0])){
-           
-        }
-        if (parts.size() == 2 && parts[0] == username && compare_HASH(hashedPassword, parts[1])) {
+             if (parts.size() == 2 && parts[0] == username && compare_HASH(hashedPassword, parts[1])) {
             return true;
         }
+        }
+    
+      
     }
     return false;
 }
+/*
+this function does basic input sanitization 
+does this incase an input has extra characters on the beggining or end.
+*/
 bool clean_input(string& password) {
-    string pickedChars = "02468acefghjrtyu";
-
-   
+    string Chars_to_Remove = "012*&^£$£%@>?<:~|{}";//this are the characters to be ascaped
     string cleanedPassword;
     for (char c : password) {
         if (isalnum(c)) {
@@ -90,20 +98,19 @@ bool clean_input(string& password) {
         }
     }
     password = cleanedPassword;
-
-    // Count the number of picked characters present in the password
     int count = 0;
-    for (char c : pickedChars) {
+    for (char c : Chars_to_Remove) {
         if (password.find(c) != string::npos) {
             count++;
         }
     }
-    // Authenticate the user if more than 4 picked characters are present
+  
     if (count >= 8) {
         return true;
     }
     return false;
 }
+
 int main() {
     string storedHash = readfile("passwords.txt");
     if (storedHash.empty()) {
@@ -118,15 +125,13 @@ int main() {
     cin >> username;
     cout << "Enter password: ";
     cin >> password;
-
     if (authenticate(username, password, storedHash)) {
         authenticated(username);
         return 0;
     } else {
         attempts++;
         rejected(username);
-
-        while (attempts >=1&& attempts <= 3) {
+        while (attempts >=1&& attempts < 3) {
             cout << "try again!..." << endl;
             cout << "Enter username:";
             cin>>username;
